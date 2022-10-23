@@ -1,3 +1,5 @@
+# import everything
+
 from calendar import c
 from re import L
 from urllib.parse import _ResultMixinBytes
@@ -10,7 +12,10 @@ from sympy.solvers import solve
 from sympy import Symbol
 import math
 
-
+# initialize the main plotting windows.
+#   mainWindow will show the bifurcation diagram,
+#   mainWindow2 will show the cobweb diagram, and
+#   mainWindow3 will show the time series
 mainWindow = DEGraphWin(title = "Logistic Map Explorer",defCoords=[-0.4,-0.1,4,1],width = 700,height = 350,offsets=[0,0],autoflush = True,hasTitlebar = False,hThickness=3,hBGColor="black")
 mainWindow.setBackground(color_rgb(129,141,146))
 mainWindow2 = DEGraphWin(title = "Logistic Map Explorer",defCoords=[-0.1,-0.1,1,1],width = 350,height = 350,offsets=[0,350],autoflush = True,hasTitlebar = False,hThickness=3,hBGColor="black")
@@ -18,9 +23,11 @@ mainWindow2.setBackground(color_rgb(129,141,146))
 mainWindow3 = DEGraphWin(title = "Logistic Map Explorer",defCoords=[-0.5,-0.1,5,1],width = 350,height = 350,offsets=[350,350],autoflush = True,hasTitlebar = False,hThickness=3,hBGColor="black")
 mainWindow3.setBackground(color_rgb(129,141,146))
     
+# create two lists that hold lines
 lines = []
 rlines = []
 
+# initialize the btnWindow, entryWindow, and entries.
 btnWindow = DEGraphWin(title = "Buttons",defCoords=[-10,-10,10,10],width = 700,height = 200,offsets=[0,700],autoflush = False,hasTitlebar = False,hThickness=3,hBGColor="black")
 btnWindow.setBackground(color_rgb(129,141,146))
 entryWindow = DEGraphWin(title = "Buttons",defCoords=[-10,-10,10,10],width = 300,height = 900,offsets=[700,0],autoflush = False,hasTitlebar = False,hThickness=3,hBGColor="black")
@@ -30,6 +37,7 @@ enterinitx = DblEntry(Point(0,0), width = 6, span = [0,1],colors = ['gray','blac
 enteriterations.draw(entryWindow)
 enterinitx.draw(entryWindow)
 
+# Some text to help the user know what's going on
 textEnterIterations = Text(Point(-6,4), "# of Iterations?")
 textEnterIterations.draw(entryWindow)
 textEnterIterations.setSize(10)
@@ -48,6 +56,7 @@ textCredits.draw(entryWindow)
 textCredits.setSize(8)
 textCredits.setStyle('italic')
 
+# the only two buttons we need. Isn't that nice?
 btnSettings = Button(
                     btnWindow,
                     Point(-10,10),
@@ -61,7 +70,6 @@ btnSettings = Button(
                     timeDelay = 0.25
                     )   
 btnSettings.activate()
-
 btnFetchR = Button(
                     btnWindow,
                     Point(-6,10),
@@ -76,6 +84,7 @@ btnFetchR = Button(
                     )
 btnFetchR.activate()
 
+# draw the axes' labels
 rAxis = Text(Point(2,0), "R")
 rAxis.draw(mainWindow)
 rAxis.setStyle("italic")
@@ -95,31 +104,43 @@ xn2Axis = Text(Point(0,0.5),"Xn")
 xn2Axis.draw(mainWindow3)
 xn2Axis.setStyle("italic")
 
-
+# R, by default, will be 2.
 R = 2
 def main():
+    # globalize lines and clickPoint2. This will be useful later.
     global lines
     global clickPoint2
 
+    # turn on the axes
     mainWindow.toggleAxes()
     mainWindow2.toggleAxes()
     mainWindow3.toggleAxes()
-
+    
+    # MAIN RUNNING WINDOW
     while True:
+        
+        # globalize R, the text that shows R, and the list that holds the R line
         global R
         global textR
         global rlines
-
+        
+        # as long as the btnWindow is open we know the program is running.
+        #   So if it's open we know we can run the getmouse and flush the window.
+        #   Otherwise, break from the while loop and end the program
         if btnWindow.isOpen():
             clickPoint = btnWindow.getMouse()   
             mainWindow.flush()  
         else:
             break 
-
+            
+        # there are two possibilities: settings is clicked or fetch R is clicked
+        #   therefore if settings is clicked . . .
         if (btnSettings.clicked(clickPoint)):
+            # create a new window that holds the settings
             settingsWindow = DEGraphWin(title = "Settings",defCoords=[-10,-10,10,10],width = 700,height = 200,offsets=[0,700],autoflush = False,hasTitlebar = False,hThickness=3,hBGColor="black")
             settingsWindow.setBackground(color_rgb(129,141,146))
 
+            # initialize all the buttons on settings
             btnZoomIn = Button(
                     settingsWindow,
                     Point(-10,10),
@@ -186,11 +207,14 @@ def main():
                     )
             btnQuit.activate()
             
+            # while true . . .
             while True:
+                
+                # if the window is open get the clickpoint and coords
                 if settingsWindow.isOpen():
                     settingsClick = settingsWindow.getMouse()
                     coords = mainWindow.currentCoords
-
+                    
                     if btnZoomIn.clicked(settingsClick):
                         textZooming = Text(Point((coords[2]+coords[0])/2,(coords[3]+coords[1])/2), "Click Two Points on the Graph to Zoom")
                         textZooming.draw(mainWindow)
@@ -236,10 +260,14 @@ def main():
                         settingsWindow.close()
                         break                 
 
-
+        # if the fetch R button was clicked . . .
         if(btnFetchR.clicked(clickPoint)):
+            
+            # undraw the rlines
             for rline in rlines:
                 rline.undraw()
+                
+            # prompt the user to get an R value
             coords = mainWindow.currentCoords
             textGetR = Text(Point((coords[2]+coords[0])/2,(coords[3]+coords[1])/2), "Click an R Value on This Graph")
             textGetR.draw(mainWindow)
@@ -251,13 +279,13 @@ def main():
             R = clickPoint2.getX()
                     
             textR.setText("R = " + str(R))
-            plotBifur(R)
             
-
+            # plot everything
+            plotBifur(R)
             plotCobwebs(R)
             plotTimeSeries(R)
             
-
+# plot cobwebs
 def plotCobwebs(R):
             global lines
         
@@ -322,7 +350,7 @@ def plotCobwebs(R):
             textLoading.setText("")
 
 
-
+# plot bifurcation
 def plotBifur(R):
             mainWindow.clear()
             mainWindow.update()
@@ -459,6 +487,7 @@ def plotBifur(R):
                         saveWindow.close()      
                         break    
 
+# plot time series
 def plotTimeSeries(R):
     global lines
     x = np.random.random()
@@ -470,5 +499,6 @@ def plotTimeSeries(R):
         x = R*x*(1-x)
         i += 0.075
 
+# run the main method
 if __name__ == "__main__":
     main()
