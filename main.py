@@ -215,43 +215,77 @@ def main():
                     settingsClick = settingsWindow.getMouse()
                     coords = mainWindow.currentCoords
                     
+                    # if the zoom in button is clicked . . .
                     if btnZoomIn.clicked(settingsClick):
+                        
+                        # prompt the user to zoom and give instructions
                         textZooming = Text(Point((coords[2]+coords[0])/2,(coords[3]+coords[1])/2), "Click Two Points on the Graph to Zoom")
                         textZooming.draw(mainWindow)
                         textZooming.setSize(12)
                         textZooming.setStyle('italic')
-                    
+                        
+                        # run the zoom function
                         mainWindow.zoom(whichWay = ZOOM_IN, keepRatio = False)
-
+                        
+                        # clear the zoom prompt
                         textZooming.setText("")
+                        
+                        # replot
                         plotBifur(R)
+                        
+                        # close the settings window and break the loop
                         settingsWindow.close()
                         break
+                        
+                    # if zoom out is clicked . . .
                     if btnZoomOut.clicked(settingsClick):
+                        
+                        # zoom out, replot, and close the settings window
                         mainWindow.zoom(whichWay = ZOOM_OUT, keepRatio = False)
                         plotBifur(R)
                         settingsWindow.close()
                         break
-                        
+                    
+                    # if the user wants to clear all . . . 
                     if btnClear.clicked(settingsClick):
+                        
+                        # update coords
                         coords = mainWindow.currentCoords
+                        
+                        # let the user know that we're working on it (because it takes some time to clear)
                         textClearing = Text(Point((coords[2]+coords[0])/2,(coords[3]+coords[1])/2), "Clearing...")
                         textClearing.draw(mainWindow)
                         textClearing.setSize(12)
                         textClearing.setStyle('italic')
+                        
+                        # clear all windows
                         mainWindow.clear()
                         mainWindow2.clear()
                         mainWindow3.clear()
+                        
+                        # undraw all cobweb and time series lines. DO NOT undraw the r line because the user might want to keep it
                         for line in lines:
                             line.undraw()
                         lines = []
+                        
+                        # clear the clearing text and close the window
                         textClearing.setText("")
                         settingsWindow.close()
                         break
+                    
+                    # if the user wants to escape . . .
                     if btnExit.clicked(settingsClick):
+                        
+                        # close the settings window and break
                         settingsWindow.close()
                         break
+                    
+                    # if the user wants to quit . . .
                     if btnQuit.clicked(settingsClick):
+                        
+                        # close all windows, break from the settings loop. keep in mind that the 
+                        #   fetch R / settings window loop will be broken because it checks if the windows are open and 
+                        #   breaks if they aren't
                         mainWindow.close()
                         mainWindow2.close()
                         mainWindow3.close()
