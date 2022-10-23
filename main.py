@@ -308,11 +308,13 @@ def main():
             textGetR.setSize(12)
             textGetR.setStyle('italic')
             
+			# grab the x axis value (R value)
             clickPoint2 = mainWindow.getMouse()
             textGetR.setText("")
             R = clickPoint2.getX()
                     
-            textR.setText("R = " + str(R))
+            # update the r text with the new r value
+			textR.setText("R = " + str(R))
             
             # plot everything
             plotBifur(R)
