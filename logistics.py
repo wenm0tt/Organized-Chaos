@@ -1,5 +1,3 @@
-# import that which is necessary
-
 from calendar import c
 from re import L
 from urllib.parse import _ResultMixinBytes
@@ -50,7 +48,6 @@ textCredits.draw(entryWindow)
 textCredits.setSize(8)
 textCredits.setStyle('italic')
 
-# now we define all buttons.
 btnSettings = Button(
                     btnWindow,
                     Point(-10,10),
@@ -79,19 +76,6 @@ btnFetchR = Button(
                     )
 btnFetchR.activate()
 
-
-
-# finally, we define all the entries. We want the user to be able to change the R value, initial x, and # of iterations.
-# when changing the R value, if we are plotting a cobweb we just plot the pertaining graph. If plotting the bifurcation, we plot a 
-#   line at the R value.
-# Initial x and # of iterations are self explanatory.
-# note that the span I've set for each entry is appropriate to the domain. I've set max iterations to 500 because 
-#   past that it is meaningless to see the cobweb diagram.
-    
-
-
-
-# and add the axes labels.
 rAxis = Text(Point(2,0), "R")
 rAxis.draw(mainWindow)
 rAxis.setStyle("italic")
@@ -111,33 +95,27 @@ xn2Axis = Text(Point(0,0.5),"Xn")
 xn2Axis.draw(mainWindow3)
 xn2Axis.setStyle("italic")
 
-# define the main method
 
-# R, by default, will be equal to 2
 R = 2
 def main():
     global lines
     global clickPoint2
 
-    # turn axes on.
     mainWindow.toggleAxes()
     mainWindow2.toggleAxes()
     mainWindow3.toggleAxes()
 
-    # while the program is running . . .
     while True:
         global R
         global textR
         global rlines
 
-         # fetch the mouse
         if btnWindow.isOpen():
             clickPoint = btnWindow.getMouse()   
             mainWindow.flush()  
         else:
             break 
 
-        # if the settings button is clicked . . .
         if (btnSettings.clicked(clickPoint)):
             settingsWindow = DEGraphWin(title = "Settings",defCoords=[-10,-10,10,10],width = 700,height = 200,offsets=[0,700],autoflush = False,hasTitlebar = False,hThickness=3,hBGColor="black")
             settingsWindow.setBackground(color_rgb(129,141,146))
@@ -219,7 +197,6 @@ def main():
                         textZooming.setSize(12)
                         textZooming.setStyle('italic')
                     
-                        # zoom in
                         mainWindow.zoom(whichWay = ZOOM_IN, keepRatio = False)
 
                         textZooming.setText("")
@@ -260,7 +237,6 @@ def main():
                         break                 
 
 
-        # if the Fetch R button is clicked . . .
         if(btnFetchR.clicked(clickPoint)):
             for rline in rlines:
                 rline.undraw()
@@ -284,25 +260,19 @@ def main():
 
 def plotCobwebs(R):
             global lines
-
-            
-
-  # call the currentCoords and graph x and f(x) from the xmin to xmax
+        
             coords = mainWindow2.currentCoords
             for line in lines:
                 line.undraw()
             lines = []
 
-            # set up loading text
             textLoading = Text(Point((coords[2]+coords[0])/2,(coords[3]+coords[1])/2), "Loading...")
             textLoading.draw(mainWindow)
             textLoading.setSize(12)
             textLoading.setStyle('italic')
 
-            # clear the window
             mainWindow2.clear()
 
-            # for each possible iteration in max iterations undraw each instance of the line if it was drawn.
             for line in lines:
                 line.undraw()
             lines = []
@@ -315,43 +285,40 @@ def plotCobwebs(R):
                 mainWindow2.plot(i,i)
                 mainWindow2.plot(i,R*i*(1-i))
                 i += 0.005
-            # clear loading text
+
             textLoading.setText("")
-            # flush the window
+
             mainWindow.flush()
 
-            # update coords
             coords = mainWindow2.currentCoords
 
-           
-            # x equals the initial x, and y = f(x)
             initx = enterinitx.getValue()
             iterations = enteriterations.getValue()
             x = initx
             y = R*initx*(1-initx)
 
-            # set up loading text
+            
             textLoading = Text(Point((coords[2]+coords[0])/2,(coords[3]+coords[1])/2), "Loading...")
             textLoading.draw(mainWindow2)
             textLoading.setSize(12)
             textLoading.setStyle('italic')
 
-            # for each iteration . . .
+            
             for i in range(int(iterations)):
                 
-                # draw a line at the y value from x to y 
+                
                 line = Line(Point(x, y), Point(y,y),style='solid')
                 line.draw(mainWindow2)
                 lines.append(line)
-                # draw another line from y to f(y)
+                
                 line2 = Line(Point(y, y), Point(y,R*y*(1-y)),style='solid')
                 line2.draw(mainWindow2)
                 lines.append(line2)
-                # update the x and y to y and f(y)
+               
                 x = y
                 y = R*y*(1-y)
 
-            # remove loading text
+           
             textLoading.setText("")
 
 
