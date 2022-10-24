@@ -1,15 +1,8 @@
-# import everything
+# import everything required (explained in README.md)
 
-from calendar import c
-from re import L
-from urllib.parse import _ResultMixinBytes
-from sympy import Q, solve
 from DEgraphics import *
 from PIL import Image
-import random
 import numpy as np
-from sympy.solvers import solve
-from sympy import Symbol
 import math
 
 # initialize the main plotting windows.
