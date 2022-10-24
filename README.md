@@ -1,4 +1,6 @@
 # Instructions
+## PLEASE READ OC-README.pdf FOR A BETTER UNDERSTANDING OF THE PROGRAM
+
 There are a few installs required for the program to run. If you are on macOS:
 
 ```
