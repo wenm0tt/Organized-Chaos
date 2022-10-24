@@ -284,7 +284,7 @@ def main():
                     if btnQuit.clicked(settingsClick):
                         
                         # close all windows, break from the settings loop. keep in mind that the 
-                        #   fetch R / settings window loop will be broken because it checks if the windows are open and 
+                        #   fetch R / settings window loop will also be broken because it checks if the windows are open and 
                         #   breaks if they aren't
                         mainWindow.close()
                         mainWindow2.close()
@@ -314,7 +314,7 @@ def main():
             R = clickPoint2.getX()
                     
             # update the r text with the new r value
-			textR.setText("R = " + str(R))
+            textR.setText("R = " + str(R))
             
             # plot everything
             plotBifur(R)
@@ -323,88 +323,121 @@ def main():
             
 # plot cobwebs
 def plotCobwebs(R):
+
+            # globalize lines
             global lines
-        
+
+            # update coords
             coords = mainWindow2.currentCoords
+
+            # undraw all lines 
             for line in lines:
                 line.undraw()
             lines = []
 
+            # create a loading screen
             textLoading = Text(Point((coords[2]+coords[0])/2,(coords[3]+coords[1])/2), "Loading...")
             textLoading.draw(mainWindow)
             textLoading.setSize(12)
             textLoading.setStyle('italic')
 
+            # clear the previously plotted graph, if there was one
             mainWindow2.clear()
 
-            for line in lines:
-                line.undraw()
-            lines = []
+            # create a line at R
             line = Line(Point(R,0), Point(R,1), style = 'solid')
             lines.append(line)
             line.draw(mainWindow)
 
+            # i starts at the left x value, plots till the right x value, incrementing by 0.005
             i = coords[0]
             while i < coords[2]:
+
+                # plot the steady state line
                 mainWindow2.plot(i,i)
+
+                # plot the graph of the logistic map
                 mainWindow2.plot(i,R*i*(1-i))
                 i += 0.005
-
+            
+            # clear the loading text
             textLoading.setText("")
 
+            # flush the window
             mainWindow.flush()
 
+            # update coords
             coords = mainWindow2.currentCoords
 
+            # grab all values required for the cobweb part
             initx = enterinitx.getValue()
             iterations = enteriterations.getValue()
+
+            # set y to f(x), x to the initial x
             x = initx
             y = R*initx*(1-initx)
 
-            
+            # redo the loading prompt
             textLoading = Text(Point((coords[2]+coords[0])/2,(coords[3]+coords[1])/2), "Loading...")
             textLoading.draw(mainWindow2)
             textLoading.setSize(12)
             textLoading.setStyle('italic')
 
-            
+            # for every iteration the user wants . . .
             for i in range(int(iterations)):
                 
-                
+                # draw a horizontal line from the graph to the steady state line and append it to lines
                 line = Line(Point(x, y), Point(y,y),style='solid')
                 line.draw(mainWindow2)
                 lines.append(line)
                 
+                # draw a vertical line from the steady state line to the graph and append it to lines
                 line2 = Line(Point(y, y), Point(y,R*y*(1-y)),style='solid')
                 line2.draw(mainWindow2)
                 lines.append(line2)
                
+                # update the x,y
                 x = y
                 y = R*y*(1-y)
 
-           
+            # after all lines are drawn clear the loading
             textLoading.setText("")
 
 
 # plot bifurcation
 def plotBifur(R):
+
+            # clear, update, flush the window. 
             mainWindow.clear()
             mainWindow.update()
             mainWindow.flush()
+
+            # globalize rlines and undraw all the rlines
             global rlines
             for rline in rlines:
                 rline.undraw()
+
+            # draw an rline
             rline = Line(Point(R,0), Point(R,1), style = 'solid')
             rlines.append(rline)
             rline.draw(mainWindow)
 
+            # update coords
             coords = mainWindow.currentCoords
+
+            # create loading text
             textLoading = Text(Point((coords[2]+coords[0])/2,(coords[3]+coords[1])/2), "Loading...")
             textLoading.draw(mainWindow)
             textLoading.setSize(12)
             textLoading.setStyle('italic')
 
-           
+            # MAIN GRAPHING SEGMENT
+            #   Split into 3 parts: (0,3), (3,3.5), (3.5,4)
+            #   We will graph these at different detail levels to improve user experience. 
+            #   We don't need to graph the straight line part or even past a couple period-doubling bifurcations 
+            #      with high detail; that being said, it would be nice to see past 3.5 a more detailed graph
+            #   The bifurcation diagram is graphed with the following algorithm:
+            #       create a random x between 0 and 1, iterate it on the logistic map and see what fixed point it goes to.
             if coords[0] < 0:
                 rvalue = 0
             else:
@@ -448,13 +481,15 @@ def plotBifur(R):
                         x = rvalue*x*(1-x)
                 mainWindow.plot(rvalue, (x))
                 rvalue += (coords[2]-coords[0])/50000
-               
+
+            # clear the loading text
             textLoading.setText("")
 
-           
+            # create a save window
             saveWindow = DEGraphWin(title = "Buttons",defCoords=[-10,-10,10,10],width = 300,height = 100,offsets=[0,0],autoflush = False,hasTitlebar = False,hThickness=3,hBGColor="black")
             saveWindow.setBackground(color_rgb(129,141,146))
-
+            
+            # create a save and don't save button
             btnSave = Button(
                     saveWindow,
                     Point(-4,0),
@@ -481,7 +516,8 @@ def plotBifur(R):
                     timeDelay = 0.25
                     )
             btnDontSave.activate()
-
+            
+            # prompt the user to save
             while True:
                 if saveWindow.isOpen():
                     
@@ -525,12 +561,22 @@ def plotBifur(R):
 
 # plot time series
 def plotTimeSeries(R):
+
+    # globalize lines
     global lines
+
+    # pick a random x value
     x = np.random.random()
+
+    # start i at the left of the window and increment it to the right, plotting as we go
     i = 0
     while i < 5:
+
+        # draw a line from i,x to the next i, f(x)
         line = Line(Point(i,x),Point(i+0.1,R*x*(1-x)),style = 'solid')
         line.draw(mainWindow3)
+
+        # append it to lines
         lines.append(line)
         x = R*x*(1-x)
         i += 0.075
