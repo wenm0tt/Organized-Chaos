@@ -23,7 +23,7 @@ rlines = []
 # initialize the btnWindow, entryWindow, and entries.
 btnWindow = DEGraphWin(title = "Buttons",defCoords=[-10,-10,10,10],width = 700,height = 200,offsets=[0,700],autoflush = False,hasTitlebar = False,hThickness=3,hBGColor="black")
 btnWindow.setBackground(color_rgb(129,141,146))
-entryWindow = DEGraphWin(title = "Buttons",defCoords=[-10,-10,10,10],width = 300,height = 900,offsets=[700,0],autoflush = False,hasTitlebar = False,hThickness=3,hBGColor="black")
+entryWindow = DEGraphWin(title = "Organized Chaos",defCoords=[-10,-10,10,10],width = 300,height = 900,offsets=[700,0],autoflush = False,hasTitlebar = True,hThickness=3,hBGColor="black")
 entryWindow.setBackground(color_rgb(129,141,146))
 enteriterations = IntEntry(Point(0,4), width = 6, span = [0,500],colors = ['gray','black'],errorColors = ['red','white'])
 enterinitx = DblEntry(Point(0,0), width = 6, span = [0,1],colors = ['gray','black'],errorColors = ['red','white'])
