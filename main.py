@@ -1,5 +1,6 @@
 # import everything required (explained in README.md)
 
+from ctypes import pointer
 from DEgraphics import *
 from PIL import Image
 import numpy as np
@@ -9,6 +10,7 @@ import math
 #   mainWindow will show the bifurcation diagram,
 #   mainWindow2 will show the cobweb diagram, and
 #   mainWindow3 will show the time series
+
 mainWindow = DEGraphWin(title = "Logistic Map Explorer",defCoords=[-0.4,-0.1,4,1],width = 700,height = 350,offsets=[0,0],autoflush = True,hasTitlebar = False,hThickness=3,hBGColor="black")
 mainWindow.setBackground(color_rgb(129,141,146))
 mainWindow2 = DEGraphWin(title = "Logistic Map Explorer",defCoords=[-0.1,-0.1,1,1],width = 350,height = 350,offsets=[0,350],autoflush = True,hasTitlebar = False,hThickness=3,hBGColor="black")
@@ -27,6 +29,8 @@ entryWindow = DEGraphWin(title = "Organized Chaos",defCoords=[-10,-10,10,10],wid
 entryWindow.setBackground(color_rgb(129,141,146))
 enteriterations = IntEntry(Point(0,4), width = 6, span = [0,500],colors = ['gray','black'],errorColors = ['red','white'])
 enterinitx = DblEntry(Point(0,0), width = 6, span = [0,1],colors = ['gray','black'],errorColors = ['red','white'])
+enterTransient = IntEntry(Point(0,-2), width = 6, span = [0,500],colors = ['gray','black'],errorColors = ['red','white'])
+enterTransient.draw(entryWindow)
 enteriterations.draw(entryWindow)
 enterinitx.draw(entryWindow)
 
@@ -48,7 +52,9 @@ textCredits = Text(Point(0,-8), "@wenm0tt")
 textCredits.draw(entryWindow)
 textCredits.setSize(8)
 textCredits.setStyle('italic')
-
+textTransient = Text(Point(-6,-2), "Transient Length?")
+textTransient.draw(entryWindow)
+textTransient.setSize(10)
 # the only two buttons we need. Isn't that nice?
 btnSettings = Button(
                     btnWindow,
@@ -202,7 +208,8 @@ def main():
             
             # while true . . .
             while True:
-                
+                global transient
+                transient = enterTransient.getValue()
                 # if the window is open get the clickpoint and coords
                 if settingsWindow.isOpen():
                     settingsClick = settingsWindow.getMouse()
@@ -319,7 +326,8 @@ def plotCobwebs(R):
 
             # globalize lines
             global lines
-
+            global transient
+            transient = enterTransient.getValue()
             # update coords
             coords = mainWindow2.currentCoords
 
@@ -344,6 +352,7 @@ def plotCobwebs(R):
 
             # i starts at the left x value, plots till the right x value, incrementing by 0.005
             i = coords[0]
+            
             while i < coords[2]:
 
                 # plot the steady state line
@@ -560,7 +569,7 @@ def plotTimeSeries(R):
 
     # pick a random x value
     x = np.random.random()
-
+    
     # start i at the left of the window and increment it to the right, plotting as we go
     i = 0
     while i < 5:
